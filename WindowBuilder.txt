@@ -1,58 +1,64 @@
-import javax.swing.*;
-import java.awt.Color;
-import helper_classes.*;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 
-public class WindowBuilder {
-  public static void main(String[] args) {
+// Importações da biblioteca Minimal-JSON
+import com.eclipsesource.json.Json;
+import com.eclipsesource.json.JsonObject;
 
-     JFrame frame = new JFrame("My Awesome Window");
-     frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-     frame.setSize(897, 485);
-     JPanel panel = new JPanel();
-     panel.setLayout(null);
-     panel.setBackground(Color.decode("#1e1e1e"));
+public class Conselho {
+    private int id_registro;
+    String con;
 
-     JLabel textoID = new JLabel("Informe o ID do conselho:");
-     textoID.setBounds(64, 26, 186, 22);
-     textoID.setFont(CustomFontLoader.loadFont("./resources/fonts/Lato.ttf", 15));
-     textoID.setForeground(Color.decode("#D9D9D9"));
-     panel.add(textoID);
+    public Conselho(int id_registro) {
+        this.id_registro = id_registro;
+    }
 
-     JTextField inputID = new JTextField("");
-     inputID.setBounds(66, 56, 106, 22);
-     inputID.setFont(CustomFontLoader.loadFont("./resources/fonts/Lato.ttf", 15));
-     inputID.setBackground(Color.decode("#B2B2B2"));
-     inputID.setForeground(Color.decode("#656565"));
-     inputID.setBorder(new RoundedBorder(2, Color.decode("#979797"), 0));
-     OnFocusEventHelper.setOnFocusText(inputID, "ID do Conselho", Color.decode("#353535"),   Color.decode("#656565"));
-     panel.add(inputID);
+    public int getId_registro() {return id_registro; }
+    public void setId_registro(int id_registro) { this.id_registro = id_registro; }
 
-     JButton botaoConselho = new JButton("Conselho");
-     botaoConselho.setBounds(65, 92, 106, 29);
-     botaoConselho.setBackground(Color.decode("#2e2e2e"));
-     botaoConselho.setForeground(Color.decode("#D9D9D9"));
-     botaoConselho.setFont(CustomFontLoader.loadFont("./resources/fonts/Lato.ttf", 15));
-     botaoConselho.setBorder(new RoundedBorder(4, Color.decode("#979797"), 1));
-     botaoConselho.setFocusPainted(false);
-     OnClickEventHelper.setOnClickColor(botaoConselho, Color.decode("#232323"), Color.decode("#2e2e2e"));
+    //public static void main(String[] args) {
+    public void consultar(String idEscolha) {
+        String url = "https://api.adviceslip.com/advice/"+idEscolha+"";
 
-     botaoConselho.addActionListener(new java.awt.event.ActionListener() {
-      @Override
-      public void actionPerformed(java.awt.event.ActionEvent e) {
-          
-          String nome = inputID.getText();
-          
-          if (nome.trim().isEmpty()) {
-              JOptionPane.showMessageDialog(frame, "Por favor, digite o ID do Conselho!", "Aviso", JOptionPane.WARNING_MESSAGE);
-          } else {
-              JOptionPane.showMessageDialog(frame, "Olá, " + nome + "!", "Boas-vindas", JOptionPane.INFORMATION_MESSAGE);
-          }
-      }
-      });
-     panel.add(botaoConselho);
+        try {
+            HttpClient client = HttpClient.newHttpClient();
+            HttpRequest request = HttpRequest.newBuilder().uri(URI.create(url)).build();
 
-     frame.add(panel);
-     frame.setVisible(true);
+            System.out.println("Conectando à API...");
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
-  }
+            if (response.statusCode() == 200) {
+                String jsonBody = response.body();
+
+                System.out.println("Json: "+jsonBody);
+
+                // 1. Transforma o texto bruto recebido da API em um Objeto JSON
+                JsonObject objetoPrincipal = Json.parse(jsonBody).asObject();
+                
+                // 2. Entra no nó/objeto "slip"
+                JsonObject slip = objetoPrincipal.get("slip").asObject();
+                
+                // 3. Extrai o ID como um número inteiro (int) do Java
+                int id = slip.get("id").asInt();
+                
+                // 4. Extrai o conselho como uma String do Java
+                String conselho = slip.get("advice").asString();
+
+                // 5. Mostra os resultados separados
+                System.out.println("\n--- CONSELHO ENCONTRADO ---");
+                System.out.println("ID do Conselho: " + id);
+                System.out.println("Conselho: \"" + conselho + "\"");
+                System.out.println("---------------------------\n");
+                con = conselho;
+            } else {
+                System.out.println("Erro na requisição. Código: " + response.statusCode());
+            }
+
+        } catch (Exception e) {
+            System.err.println("Erro: " + e.getMessage());
+        }
+    }
+
 }
