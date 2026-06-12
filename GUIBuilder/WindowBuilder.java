@@ -55,11 +55,13 @@ public class WindowBuilder {
           String id = inputID.getText();
           
           if (id.trim().isEmpty()) {
-              JOptionPane.showMessageDialog(frame, "Por favor, digite o ID do Conselho!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            Conselho.consultarA(id);
+            //JOptionPane.showMessageDialog(frame, "Por favor, digite o ID do Conselho!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Conselho " + id + "!\n"+ Conselho.con , "Conselhos", JOptionPane.INFORMATION_MESSAGE);
           } else {
             Conselho.consultar(id);  
-            JOptionPane.showMessageDialog(frame, "Conselho " + id + "!" , "Conselhos", JOptionPane.INFORMATION_MESSAGE);
-            JOptionPane.showMessageDialog(frame, Conselho.con, "Conselhos", JOptionPane.INFORMATION_MESSAGE); 
+            JOptionPane.showMessageDialog(frame, "Conselho " + id + "!\n"+ Conselho.con , "Conselhos", JOptionPane.INFORMATION_MESSAGE);
+            //JOptionPane.showMessageDialog(frame, Conselho.con, "Conselhos", JOptionPane.INFORMATION_MESSAGE); 
                                                    
           }
       }

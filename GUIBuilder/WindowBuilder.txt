@@ -1,10 +1,22 @@
-import javax.swing.*;
 import java.awt.Color;
-import helper_classes.*;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import helper_classes.CustomFontLoader;
+import helper_classes.OnClickEventHelper;
+import helper_classes.OnFocusEventHelper;
+import helper_classes.RoundedBorder;
 
 public class WindowBuilder {
   public static void main(String[] args) {
 
+    Conselho Conselho = new Conselho(0);
+    
      JFrame frame = new JFrame("My Awesome Window");
      frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
      frame.setSize(897, 485);
@@ -40,12 +52,17 @@ public class WindowBuilder {
       @Override
       public void actionPerformed(java.awt.event.ActionEvent e) {
           
-          String nome = inputID.getText();
+          String id = inputID.getText();
           
-          if (nome.trim().isEmpty()) {
-              JOptionPane.showMessageDialog(frame, "Por favor, digite o ID do Conselho!", "Aviso", JOptionPane.WARNING_MESSAGE);
+          if (id.trim().isEmpty()) {
+            Conselho.consultarA(id);
+            //JOptionPane.showMessageDialog(frame, "Por favor, digite o ID do Conselho!", "Aviso", JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(frame, "Conselho " + id + "!\n"+ Conselho.con , "Conselhos", JOptionPane.INFORMATION_MESSAGE);
           } else {
-              JOptionPane.showMessageDialog(frame, "Olá, " + nome + "!", "Boas-vindas", JOptionPane.INFORMATION_MESSAGE);
+            Conselho.consultar(id);  
+            JOptionPane.showMessageDialog(frame, "Conselho " + id + "!\n"+ Conselho.con , "Conselhos", JOptionPane.INFORMATION_MESSAGE);
+            //JOptionPane.showMessageDialog(frame, Conselho.con, "Conselhos", JOptionPane.INFORMATION_MESSAGE); 
+                                                   
           }
       }
       });
